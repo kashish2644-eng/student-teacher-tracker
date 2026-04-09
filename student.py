@@ -45,8 +45,13 @@ c.execute('''CREATE TABLE IF NOT EXISTS users (
 id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE, password TEXT, role TEXT)''')
 
 c.execute('''CREATE TABLE IF NOT EXISTS students (
-id INTEGER PRIMARY KEY, name TEXT UNIQUE,
-grade TEXT, stream TEXT, language TEXT, optional_subject TEXT)''')
+id INTEGER PRIMARY KEY,
+user_id INTEGER,
+name TEXT,
+grade TEXT,
+stream TEXT,
+language TEXT,
+optional_subject TEXT)''')
 
 c.execute('''CREATE TABLE IF NOT EXISTS attendance (
 id INTEGER PRIMARY KEY, student_id INTEGER, subject TEXT, date TEXT, status TEXT)''')
@@ -152,6 +157,10 @@ def auth():
             if user:
                 st.session_state.login = True
                 st.session_state.user = user
+
+                # ✅ store user_id
+                st.session_state.user_id = user[0]
+
                 st.rerun()
             else:
                 st.error("Invalid credentials")
@@ -185,7 +194,10 @@ def auth():
                     (name, email, hash_password(pwd), role)
                 )
 
-                # ✅ Insert into students (SAFE)
+                # ✅ Get generated user_id
+                user_id = c.lastrowid
+
+                # ✅ Insert into students (linked via SAME ID)
                 if role == "student":
 
                     # Check if already exists
@@ -198,8 +210,9 @@ def auth():
                         st.warning("⚠️ Student already exists, linking account")
                     else:
                         c.execute(
-                            "INSERT INTO students VALUES(NULL,?,?,?,?,?)",
+                            "INSERT INTO students VALUES(?,?,?,?,?,?)",
                             (
+                                user_id,   # ✅ important change
                                 name,
                                 grade,
                                 stream or "",
@@ -216,10 +229,10 @@ def auth():
 
 # ------------------ STUDENT DASHBOARD ------------------
 def student_dashboard():
-    name = st.session_state.user[1]
+    user_id = st.session_state.user[0]
 
     col1, col2 = st.columns([8,1])
-    col1.title(f"🎓 Welcome {name}")
+    col1.title(f"🎓 Welcome {user_id}")
 
     if col2.button("Logout", key="student_logout"):
         st.session_state.login = False
@@ -227,9 +240,9 @@ def student_dashboard():
         st.rerun()
 
     df = pd.read_sql(
-        "SELECT * FROM attendance WHERE student_id=(SELECT id FROM students WHERE name=?)",
+        "SELECT * FROM attendance WHERE student_id=?",
         conn,
-        params=(name,)
+        params=(user_id,)
     )
 
     # ✅ HANDLE EMPTY DATA (IMPORTANT FIX)
