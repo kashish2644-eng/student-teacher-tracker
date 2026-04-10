@@ -221,9 +221,10 @@ def auth():
 # ------------------ STUDENT DASHBOARD ------------------
 def student_dashboard():
     user_id = st.session_state.user[0]
+    name = st.session_state.user[1]   # ✅ added (for proper display)
 
     col1, col2 = st.columns([8,1])
-    col1.title(f"🎓 Welcome {user_id}")
+    col1.title(f"🎓 Welcome {name}")   # ✅ FIXED (was showing ID)
 
     if col2.button("Logout", key="student_logout"):
         st.session_state.login = False
