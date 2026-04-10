@@ -3,7 +3,6 @@ import sqlite3
 import pandas as pd
 import hashlib
 import plotly.express as px
-from sklearn.ensemble import RandomForestClassifier
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
@@ -116,14 +115,6 @@ def generate_student_pdf(name, att, eng, final):
     ]
     doc.build(content)
     return open("report.pdf","rb").read()
-
-# ------------------ ML ------------------
-def train_model(att, eng):
-    df = pd.DataFrame({"attendance":att,"engagement":eng}).dropna()
-    df["risk"] = (df["attendance"]<75).astype(int)
-    model = RandomForestClassifier()
-    model.fit(df[["attendance","engagement"]], df["risk"])
-    return model
 
 # ------------------ SESSION ------------------
 if "login" not in st.session_state:
@@ -461,19 +452,6 @@ def faculty_dashboard():
         st.subheader("📊 Attendance Distribution")
         fig = px.histogram(att_sum, nbins=10)
         st.plotly_chart(fig, use_container_width=True)
-
-        # 🤖 ML Prediction
-        st.subheader("🤖 ML Prediction")
-        model = train_model(att_sum, eng_sum)
-
-        for sid in final.index:
-            pred = model.predict([[att_sum[sid], eng_sum.get(sid,0)]])[0]
-            name = students[students["id"] == sid]["name"].values[0]
-
-            if pred == 1:
-                st.error(f"{name} → At Risk")
-            else:
-                st.success(f"{name} → Safe")
 
 # ------------------ MAIN ------------------
 if not st.session_state.login:
