@@ -199,26 +199,18 @@ def auth():
                 # ✅ Insert into students (linked via SAME ID)
                 if role == "student":
 
-                    # Check if already exists
-                    existing = c.execute(
-                        "SELECT * FROM students WHERE name=?",
-                        (name,)
-                    ).fetchone()
-
-                    if existing:
-                        st.warning("⚠️ Student already exists, linking account")
-                    else:
-                        c.execute(
-                            "INSERT INTO students VALUES(?,?,?,?,?,?)",
-                            (
-                                user_id,   # ✅ important change
-                                name,
-                                grade,
-                                stream or "",
-                                language or "",
-                                optional or ""
-                            )
+                    # 🔥 FIX: removed unnecessary existing check (was breaking ID sync)
+                    c.execute(
+                        "INSERT INTO students VALUES(?,?,?,?,?,?)",
+                        (
+                            user_id,   # SAME ID as users table
+                            name,
+                            grade,
+                            stream or "",
+                            language or "",
+                            optional or ""
                         )
+                    )
 
                 conn.commit()
                 st.success("✅ Account Created Successfully")
