@@ -37,7 +37,7 @@ body {
 """, unsafe_allow_html=True)
 
 # ------------------ DB ------------------
-conn = sqlite3.connect("tracker.db", check_same_thread=False)
+conn = sqlite3.connect("tracker_v2.db", check_same_thread=False)
 c = conn.cursor()
 
 c.execute('''CREATE TABLE IF NOT EXISTS users (
