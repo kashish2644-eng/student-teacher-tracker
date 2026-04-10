@@ -335,21 +335,7 @@ def faculty_dashboard():
                 key="student_optional"
             )
 
-        if st.button("Add Student", key="add_student_btn"):
-            try:
-                c.execute(
-                    "INSERT INTO students VALUES(NULL,?,?,?,?,?)",
-                    (name, 
-                     grade,
-                     stream or "", 
-                     language or "", 
-                     optional or ""
-                    )
-                )
-                conn.commit()
-                st.success("✅ Student Added Successfully")
-            except:
-                st.error("⚠️ Student already exists")
+        st.info("Students can only be added via signup")
 
         st.divider()
 
