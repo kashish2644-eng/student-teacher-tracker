@@ -348,7 +348,12 @@ def faculty_dashboard():
             try:
                 c.execute(
                     "INSERT INTO students VALUES(NULL,?,?,?,?,?)",
-                    (name, grade, stream, language, optional)
+                    (name, 
+                     grade,
+                     stream or "", 
+                     language or "", 
+                     optional or ""
+                    )
                 )
                 conn.commit()
                 st.success("✅ Student Added Successfully")
