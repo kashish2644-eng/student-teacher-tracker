@@ -46,7 +46,6 @@ id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE, password TEXT, role TEXT)'
 
 c.execute('''CREATE TABLE IF NOT EXISTS students (
 id INTEGER PRIMARY KEY,
-user_id INTEGER,
 name TEXT,
 grade TEXT,
 stream TEXT,
