@@ -6,7 +6,9 @@ import plotly.express as px
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
-
+import os
+if os.path.exists("tracker_v2.db"):
+    os.remove("tracker_v2.db")
 # ------------------ CONFIG ------------------
 st.set_page_config(page_title="EduTrack Pro", layout="wide")
 
